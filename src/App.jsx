@@ -1,21 +1,17 @@
-import { useState } from "react";
-import { restaurants } from "./data";
+import { Box, Container } from "@chakra-ui/react";
+import Navbar from "./components/Navbar";
 import SearchBar from "./components/SearchBar";
-import RestaurantList from "./components/RestaurantList";
+import BusinessList from "./components/BusinessList";
 
 function App() {
-  const [search, setSearch] = useState("");
-
-  const filteredRestaurants = restaurants.filter((r) =>
-    r.name.toLowerCase().includes(search.toLowerCase())
-  );
-
   return (
-    <div style={{ maxWidth: "500px", margin: "0 auto", paddingTop: "20px" }}>
-      <h1>Yelp Clone</h1>
-      <SearchBar search={search} setSearch={setSearch} />
-      <RestaurantList restaurants={filteredRestaurants} />
-    </div>
+    <Box bg="gray.50" minH="100vh">
+      <Navbar />
+      <Container maxW="container.lg" py={4}>
+        <SearchBar />
+        <BusinessList />
+      </Container>
+    </Box>
   );
 }
 

@@ -1,12 +1,21 @@
-export default function SearchBar({ search, setSearch }) {
-    return (
-      <input
-        type="text"
-        placeholder="Search restaurants..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        style={{ padding: "8px", width: "100%", marginBottom: "10px" }}
+import { InputGroup, InputLeftElement, Input } from "@chakra-ui/react";
+import { SearchIcon } from "@chakra-ui/icons";
+import { useState } from "react";
+
+export default function SearchBar() {
+  const [query, setQuery] = useState("");
+
+  return (
+    <InputGroup mb={5}>
+      <InputLeftElement pointerEvents="none">
+        <SearchIcon color="gray.400" />
+      </InputLeftElement>
+      <Input
+        bg="white"
+        placeholder="Search restaurants, cafes, bars..."
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
       />
-    );
-  }
-  
+    </InputGroup>
+  );
+}
