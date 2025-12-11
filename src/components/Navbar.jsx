@@ -14,9 +14,7 @@ export default function Navbar() {
     >
       <Heading size="md" color="red.500">Yelp Clone</Heading>
       <Spacer />
-      <Button colorScheme="red" variant="outline">
-        Login
-      </Button>
+      <Button colorScheme="red" variant="outline">Login</Button>
     </Flex>
   );
 }
