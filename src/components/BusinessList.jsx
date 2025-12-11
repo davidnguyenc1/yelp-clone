@@ -7,16 +7,17 @@ const mockData = [
     name: "Sushi Place",
     category: "Japanese",
     price: "$$",
-    imageUrl: "https://source.unsplash.com/random/400x300/?sushi",
+    imageUrl: "https://images.unsplash.com/photo-1553621042-f6e147245754?crop=entropy&cs=tinysrgb&fit=max&h=200&w=400",
   },
   {
     id: 2,
     name: "Pizza House",
     category: "Italian",
     price: "$",
-    imageUrl: "https://source.unsplash.com/random/400x300/?pizza",
+    imageUrl: "https://images.unsplash.com/photo-1601924638867-3ec7ff3a10ab?crop=entropy&cs=tinysrgb&fit=max&h=200&w=400",
   },
 ];
+
 
 export default function BusinessList() {
   return (
