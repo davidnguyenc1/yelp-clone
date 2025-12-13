@@ -1,18 +1,52 @@
+import { Routes, Route } from "react-router-dom";
+
 import { Box, Container } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "./components/Navbar";
 import SearchBar from "./components/SearchBar";
 import BusinessList from "./components/BusinessList";
+import LocationSearch from "./components/LocationSearch";
+import BusinessDetail from "./components/BusinessDetail";
+
 
 function App() {
-  const [query, setQuery] = useState(""); // <-- search term state
+  const [query, setQuery] = useState("");
+  const [location, setLocation] = useState(null);
+  const [city, setCity] = useState("");
+
+  // Try GPS first
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(
+      (pos) =>
+        setLocation({
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+        }),
+      () => setLocation(null)
+    );
+  }, []);
 
   return (
     <Box bg="gray.50" minH="100vh">
       <Navbar />
       <Container maxW="container.lg" py={4}>
-        <SearchBar query={query} setQuery={setQuery} /> {/* pass state down */}
-        <BusinessList searchQuery={query} /> {/* pass query down */}
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <>
+                <SearchBar query={query} setQuery={setQuery} />
+                <LocationSearch setCity={setCity} />
+                <BusinessList
+                  searchQuery={query}
+                  location={location}
+                  city={city}
+                />
+              </>
+            }
+          />
+          <Route path="/business/:id" element={<BusinessDetail />} />
+        </Routes>
       </Container>
     </Box>
   );

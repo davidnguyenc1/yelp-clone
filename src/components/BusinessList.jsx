@@ -1,33 +1,67 @@
-import { SimpleGrid } from "@chakra-ui/react";
+import { SimpleGrid, Spinner, Center, Text } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 import BusinessCard from "./BusinessCard";
 
-const mockData = [
-  {
-    id: 1,
-    name: "Sushi Place",
-    category: "Japanese",
-    price: "$$",
-    imageUrl: "https://via.placeholder.com/400x200?text=Sushi+Place",
-  },
-  {
-    id: 2,
-    name: "Pizza House",
-    category: "Italian",
-    price: "$",
-    imageUrl: "https://via.placeholder.com/400x200?text=Pizza+House",
-  },
-];
+export default function BusinessList({ searchQuery, location, city }) {
+  const [businesses, setBusinesses] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-export default function BusinessList({ searchQuery }) {
-  const filteredData = mockData.filter(
-    (b) =>
-      b.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      b.category.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  useEffect(() => {
+    // Do nothing if no location and no city
+    if (!location && !city) return;
+
+    const fetchBusinesses = async () => {
+      setLoading(true);
+      setError(null);
+
+      // Decide which URL to call
+      const url = city
+        ? `/api/search?city=${city}&term=${searchQuery}`
+        : `/api/search?lat=${location.lat}&lng=${location.lng}&term=${searchQuery}`;
+
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("Failed to fetch businesses");
+        const data = await res.json();
+        setBusinesses(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBusinesses();
+  }, [searchQuery, location, city]);
+
+  if (loading) {
+    return (
+      <Center py={10}>
+        <Spinner size="xl" />
+      </Center>
+    );
+  }
+
+  if (error) {
+    return (
+      <Center py={10}>
+        <Text color="red.500">{error}</Text>
+      </Center>
+    );
+  }
+
+  if (businesses.length === 0) {
+    return (
+      <Center py={10}>
+        <Text>No businesses found</Text>
+      </Center>
+    );
+  }
 
   return (
     <SimpleGrid columns={[1, 2, 3]} spacing={5}>
-      {filteredData.map((b) => (
+      {businesses.map((b) => (
         <BusinessCard key={b.id} business={b} />
       ))}
     </SimpleGrid>
