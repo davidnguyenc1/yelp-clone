@@ -24,7 +24,7 @@ export default function BusinessList({ searchQuery, location, city }) {
         const res = await fetch(url);
         if (res.status === 429) {
           throw new Error("You have hit the Yelp API daily limit!");
-        } else if (!res.ok) throw new Error("Failed to fetch businesses");
+        } else if (!res.ok) throw new Error("Failed to fetch businesses: ${res.status}");
         const data = await res.json();
         setBusinesses(data);
       } catch (err) {
