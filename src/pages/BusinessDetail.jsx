@@ -7,7 +7,7 @@ export default function BusinessDetail() {
   const [business, setBusiness] = useState(null);
 
   useEffect(() => {
-    fetch(`/api/business?id=${id}`)
+    fetch(`/api/business/${id}`)
       .then((res) => res.json())
       .then((data) => setBusiness(data));
   }, [id]);
