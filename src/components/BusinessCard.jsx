@@ -3,14 +3,9 @@ import { Link } from "react-router-dom";
 
 export default function BusinessCard({ business }) {
   return (
-    <Box bg="white" shadow="sm" borderRadius="md" overflow="hidden">
-      <Link to={`/business/${business.id}`}>
-        <Image
-          src={business.image_url}
-          h="200px"
-          w="100%"
-          objectFit="cover"
-        />
+    <Link to={`/business/${business.id}`}>
+      <Box bg="white" shadow="sm" borderRadius="md" overflow="hidden" cursor="pointer">
+        <Image src={business.image_url} h="200px" w="100%" objectFit="cover" />
         <Box p={4}>
           <Stack spacing={1}>
             <Heading size="md">{business.name}</Heading>
@@ -19,7 +14,7 @@ export default function BusinessCard({ business }) {
             <Text>{business.categories.map(c => c.title).join(", ")}</Text>
           </Stack>
         </Box>
-      </Link>
-    </Box>
+      </Box>
+    </Link>
   );
 }

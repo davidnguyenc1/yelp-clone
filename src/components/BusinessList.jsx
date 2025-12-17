@@ -8,23 +8,19 @@ export default function BusinessList({ searchQuery, location, city }) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Do nothing if no location and no city
     if (!location && !city) return;
 
     const fetchBusinesses = async () => {
       setLoading(true);
       setError(null);
 
-      // Decide which URL to call
       const url = city
         ? `/api/search?city=${city}&term=${searchQuery}`
         : `/api/search?lat=${location.lat}&lng=${location.lng}&term=${searchQuery}`;
 
       try {
         const res = await fetch(url);
-        if (res.status === 429) {
-          throw new Error("You have hit the Yelp API daily limit!");
-        } else if (!res.ok) throw new Error("Failed to fetch businesses: ${res.status}");
+        if (!res.ok) throw new Error("Failed to fetch businesses");
         const data = await res.json();
         setBusinesses(data);
       } catch (err) {
@@ -37,29 +33,9 @@ export default function BusinessList({ searchQuery, location, city }) {
     fetchBusinesses();
   }, [searchQuery, location, city]);
 
-  if (loading) {
-    return (
-      <Center py={10}>
-        <Spinner size="xl" />
-      </Center>
-    );
-  }
-
-  if (error) {
-    return (
-      <Center py={10}>
-        <Text color="red.500">{error}</Text>
-      </Center>
-    );
-  }
-
-  if (businesses.length === 0) {
-    return (
-      <Center py={10}>
-        <Text>No businesses found</Text>
-      </Center>
-    );
-  }
+  if (loading) return <Center py={10}><Spinner size="xl" /></Center>;
+  if (error) return <Center py={10}><Text color="red.500">{error}</Text></Center>;
+  if (businesses.length === 0) return <Center py={10}><Text>No businesses found</Text></Center>;
 
   return (
     <SimpleGrid columns={[1, 2, 3]} spacing={5}>
