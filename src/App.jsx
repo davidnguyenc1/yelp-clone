@@ -6,7 +6,7 @@ import Navbar from "./components/Navbar";
 import SearchBar from "./components/SearchBar";
 import BusinessList from "./components/BusinessList";
 import LocationSearch from "./components/LocationSearch";
-import BusinessDetail from "./components/BusinessDetail";
+import BusinessDetail from "./pages/BusinessDetail";
 
 
 function App() {
