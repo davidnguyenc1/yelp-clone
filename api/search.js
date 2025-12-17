@@ -1,24 +1,29 @@
-import fetch from "node-fetch";
-
 export default async function handler(req, res) {
-  const { term, city, lat, lng } = req.query;
-
-  let url;
-  if (city) {
-    url = `https://api.yelp.com/v3/businesses/search?location=${city}&term=${term || ""}&limit=12`;
-  } else if (lat && lng) {
-    url = `https://api.yelp.com/v3/businesses/search?latitude=${lat}&longitude=${lng}&term=${term || ""}&limit=12`;
-  } else {
-    return res.status(400).json({ error: "Missing location" });
+    const { lat, lng, term = "restaurants", city } = req.query;
+  
+    let url = "https://api.yelp.com/v3/businesses/search?limit=12";
+  
+    if (city) {
+      url += `&location=${city}`;
+    } else if (lat && lng) {
+      url += `&latitude=${lat}&longitude=${lng}`;
+    } else {
+      return res.status(400).json({ error: "Location required" });
+    }
+  
+    url += `&term=${term}`;
+  
+    try {
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${process.env.YELP_API_KEY}`,
+        },
+      });
+  
+      const data = await response.json();
+      res.status(200).json(data.businesses);
+    } catch {
+      res.status(500).json({ error: "Failed to fetch Yelp data" });
+    } 
   }
-
-  try {
-    const apiRes = await fetch(url, {
-      headers: { Authorization: `Bearer ${process.env.YELP_API_KEY}` },
-    });
-    const data = await apiRes.json();
-    res.status(200).json(data.businesses);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-}
+  
