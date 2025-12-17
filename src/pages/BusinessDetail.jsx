@@ -9,7 +9,8 @@ export default function BusinessDetail() {
   useEffect(() => {
     //fetch(`/api/business/${id}`)
     const API_BASE = import.meta.env.VITE_API_BASE || "";
-    fetch(`${API_BASE}/api/business/${id}`)  
+    fetch(`${API_BASE}/api/business?id=${id}`)
+  
       .then((res) => res.json())
       .then((data) => setBusiness(data));
   }, [id]);
