@@ -15,8 +15,9 @@ export default function BusinessList({ searchQuery, location, city }) {
       setError(null);
 
       const url = city
-        ? `/api/search?city=${city}&term=${searchQuery}`
-        : `/api/search?lat=${location.lat}&lng=${location.lng}&term=${searchQuery}`;
+        ? `/api/search?city=${city}&term=${searchQuery}&categories=${category}`
+        : `/api/search?lat=${location.lat}&lng=${location.lng}&term=${searchQuery}&categories=${category}`;
+
 
       try {
         const res = await fetch(url);

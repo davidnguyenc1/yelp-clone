@@ -13,6 +13,8 @@ function App() {
   const [query, setQuery] = useState("");
   const [location, setLocation] = useState(null);
   const [city, setCity] = useState("");
+  const [category, setCategory] = useState("");
+
 
   // Try GPS first
   useEffect(() => {
@@ -37,10 +39,13 @@ function App() {
               <>
                 <SearchBar query={query} setQuery={setQuery} />
                 <LocationSearch setCity={setCity} />
+                <CategoryFilter category={category} setCategory={setCategory} />
+                
                 <BusinessList
                   searchQuery={query}
                   location={location}
                   city={city}
+                  category={category}
                 />
               </>
             }
