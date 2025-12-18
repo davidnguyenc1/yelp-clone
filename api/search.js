@@ -4,7 +4,7 @@ export default async function handler(req, res) {
     lng,
     term = "restaurants",
     city,
-    category, // 👈 NEW
+    category,
   } = req.query;
 
   let url = "https://api.yelp.com/v3/businesses/search?limit=12";

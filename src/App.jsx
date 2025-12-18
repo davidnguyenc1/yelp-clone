@@ -7,6 +7,7 @@ import SearchBar from "./components/SearchBar";
 import BusinessList from "./components/BusinessList";
 import LocationSearch from "./components/LocationSearch";
 import BusinessDetail from "./pages/BusinessDetail";
+import CategoryFilter from "./components/CategoryFilter";
 
 
 function App() {
