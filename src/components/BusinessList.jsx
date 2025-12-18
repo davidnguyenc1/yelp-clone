@@ -2,7 +2,7 @@ import { SimpleGrid, Spinner, Center, Text } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import BusinessCard from "./BusinessCard";
 
-export default function BusinessList({ searchQuery, location, city }) {
+export default function BusinessList({ searchQuery, location, city, category }) {
   const [businesses, setBusinesses] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -32,7 +32,7 @@ export default function BusinessList({ searchQuery, location, city }) {
     };
 
     fetchBusinesses();
-  }, [searchQuery, location, city]);
+  }, [searchQuery, location, city, category]);
 
   if (loading) return <Center py={10}><Spinner size="xl" /></Center>;
   if (error) return <Center py={10}><Text color="red.500">{error}</Text></Center>;
