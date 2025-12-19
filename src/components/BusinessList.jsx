@@ -42,9 +42,17 @@ export default function BusinessList({ searchQuery, location, city, category }) 
   if (error) return <Center py={10}><Text color="red.500">{error}</Text></Center>;
   if (businesses.length === 0) return <Center py={10}><Text>No businesses found</Text></Center>;
 
+  // Sort businesses by distance (closest first)
+  // Businesses without distance will be placed at the end
+  const sortedBusinesses = [...businesses].sort((a, b) => {
+    const distA = a.distance ?? Infinity;
+    const distB = b.distance ?? Infinity;
+    return distA - distB;
+  });
+
   return (
     <SimpleGrid columns={[1, 2, 3]} spacing={5}>
-      {businesses.map((b) => (
+      {sortedBusinesses.map((b) => (
         <BusinessCard key={b.id} business={b} />
       ))}
     </SimpleGrid>
