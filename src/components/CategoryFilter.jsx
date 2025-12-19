@@ -18,6 +18,7 @@ const FOOD_CATEGORIES = [
     { label: "Mediterranean", value: "mediterranean" },
     { label: "Greek", value: "greek" },
     { label: "French", value: "french" },
+    { label: "Fast Food", value: "hotdogs" },
   ];
   
 
