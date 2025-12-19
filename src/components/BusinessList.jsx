@@ -14,9 +14,14 @@ export default function BusinessList({ searchQuery, location, city, category }) 
       setLoading(true);
       setError(null);
 
-      const url = city
+      let url = city
         ? `/api/search?city=${city}&term=${searchQuery}`
         : `/api/search?lat=${location.lat}&lng=${location.lng}&term=${searchQuery}`;
+
+      // Add category to the API call if one is selected
+      if (category) {
+        url += `&category=${category}`;
+      }
 
       try {
         const res = await fetch(url);
@@ -31,22 +36,15 @@ export default function BusinessList({ searchQuery, location, city, category }) 
     };
 
     fetchBusinesses();
-  }, [searchQuery, location, city]);
+  }, [searchQuery, location, city, category]);
 
   if (loading) return <Center py={10}><Spinner size="xl" /></Center>;
   if (error) return <Center py={10}><Text color="red.500">{error}</Text></Center>;
   if (businesses.length === 0) return <Center py={10}><Text>No businesses found</Text></Center>;
 
-  // Filter businesses by category if one is selected
-  const filteredBusinesses = category
-    ? businesses.filter((b) =>
-        b.categories.some((c) => c.alias === category.toLowerCase())
-      )
-    : businesses;
-
   return (
     <SimpleGrid columns={[1, 2, 3]} spacing={5}>
-      {filteredBusinesses.map((b) => (
+      {businesses.map((b) => (
         <BusinessCard key={b.id} business={b} />
       ))}
     </SimpleGrid>
