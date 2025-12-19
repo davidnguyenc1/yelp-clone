@@ -1,5 +1,6 @@
-import { Box, Image, Heading, Text, Stack } from "@chakra-ui/react";
+import { Box, Image, Heading, Text, Stack, HStack } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
+import { formatDistance } from "../utils/distance";
 
 export default function BusinessCard({ business }) {
   return (
@@ -9,7 +10,14 @@ export default function BusinessCard({ business }) {
         <Box p={4}>
           <Stack spacing={1}>
             <Heading size="md">{business.name}</Heading>
-            <Text>⭐ {business.rating}</Text>
+            <HStack spacing={2}>
+              <Text>⭐ {business.rating}</Text>
+              {business.distance && (
+                <Text fontSize="sm" color="gray.600">
+                  • {formatDistance(business.distance)}
+                </Text>
+              )}
+            </HStack>
             <Text>{business.price}</Text>
             <Text>{business.categories.map(c => c.title).join(", ")}</Text>
           </Stack>
