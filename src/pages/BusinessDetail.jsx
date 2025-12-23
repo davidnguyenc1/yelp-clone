@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Box, Heading, Image, Text, Spinner, Center, Stack, HStack, AspectRatio } from "@chakra-ui/react";
+import { Box, Heading, Image, Text, Spinner, Center, Stack, HStack, AspectRatio, Link } from "@chakra-ui/react";
 import { formatDistance, calculateDistance } from "../utils/distance";
 
 export default function BusinessDetail() {
@@ -71,7 +71,9 @@ export default function BusinessDetail() {
       <Stack mt={2}>
         <Text>{business.location.address1}, {business.location.city}</Text>
         <Text>{business.display_phone}</Text>
-        <Text>{business.url}</Text>
+        <Link href={business.url} color="blue.500" isExternal>
+          {business.url}
+        </Link>
       </Stack>
     </Box>
   );
