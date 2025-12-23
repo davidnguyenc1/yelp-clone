@@ -10,6 +10,7 @@ export default function BusinessDetail() {
   const [distance, setDistance] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [reviewsLoading, setReviewsLoading] = useState(true);
+  const [reviewsError, setReviewsError] = useState(null);
 
   // Get user location
   useEffect(() => {
@@ -39,6 +40,7 @@ export default function BusinessDetail() {
     if (!id) return;
 
     setReviewsLoading(true);
+    setReviewsError(null);
     console.log("Fetching reviews for business:", id);
     fetch(`/api/reviews?id=${id}`)
       .then(res => {
@@ -48,8 +50,11 @@ export default function BusinessDetail() {
           return res.text().then(text => {
             console.error("Error response body:", text);
             try {
-              return JSON.parse(text);
+              const errorData = JSON.parse(text);
+              setReviewsError(errorData.error || `HTTP ${res.status}: ${res.statusText}`);
+              return { error: errorData.error || text };
             } catch {
+              setReviewsError(`HTTP ${res.status}: ${res.statusText}`);
               return { error: text };
             }
           });
@@ -62,19 +67,24 @@ export default function BusinessDetail() {
         if (Array.isArray(data)) {
           console.log("Setting reviews array:", data.length);
           setReviews(data);
+          setReviewsError(null);
         } else if (data?.reviews && Array.isArray(data.reviews)) {
           console.log("Setting reviews from object:", data.reviews.length);
           setReviews(data.reviews);
+          setReviewsError(null);
         } else if (data?.error) {
           console.error("Reviews API returned error:", data.error);
+          setReviewsError(data.error);
           setReviews([]);
         } else {
           console.warn("Unexpected reviews data format:", data);
+          setReviewsError("Unexpected response format");
           setReviews([]);
         }
       })
       .catch(err => {
         console.error("Error fetching reviews:", err);
+        setReviewsError(err.message || "Failed to fetch reviews. API routes may not work in local development.");
         setReviews([]);
       })
       .finally(() => {
@@ -219,6 +229,15 @@ export default function BusinessDetail() {
             <Center py={4}>
               <Spinner size="sm" />
             </Center>
+          ) : reviewsError ? (
+            <Box p={3} bg="red.50" borderRadius="md">
+              <Text color="red.600" fontSize="sm">
+                Error loading reviews: {reviewsError}
+              </Text>
+              <Text color="gray.600" fontSize="xs" mt={1}>
+                Note: API routes require Vercel CLI for local development. Run "vercel dev" to test locally.
+              </Text>
+            </Box>
           ) : reviews.length > 0 ? (
             <Stack spacing={4}>
               {reviews.map((review) => (
