@@ -18,10 +18,9 @@ export default function BusinessList({ searchQuery, location, city, category }) 
         ? `/api/search?city=${city}&term=${searchQuery}`
         : `/api/search?lat=${location.lat}&lng=${location.lng}&term=${searchQuery}`;
 
-      // Add category to the API call if one is selected
-      if (category) {
-        url += `&category=${category}`;
-      }
+      // Always scope to food/restaurant categories; override with selected category
+      const selectedCategory = category || "restaurants";
+      url += `&category=${selectedCategory}`;
 
       try {
         const res = await fetch(url);
