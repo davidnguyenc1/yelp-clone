@@ -38,9 +38,31 @@ export default function BusinessDetail() {
     if (!id) return;
 
     fetch(`/api/reviews?id=${id}`)
-      .then(res => res.json())
-      .then(data => setReviews(data))
-      .catch(err => console.error(err));
+      .then(res => {
+        if (!res.ok) {
+          console.error("Reviews API error:", res.status, res.statusText);
+          return [];
+        }
+        return res.json();
+      })
+      .then(data => {
+        console.log("Reviews data:", data);
+        // Handle both array and object with reviews property
+        if (Array.isArray(data)) {
+          setReviews(data);
+        } else if (data?.reviews) {
+          setReviews(data.reviews);
+        } else if (data?.error) {
+          console.error("Reviews API returned error:", data.error);
+          setReviews([]);
+        } else {
+          setReviews([]);
+        }
+      })
+      .catch(err => {
+        console.error("Error fetching reviews:", err);
+        setReviews([]);
+      });
   }, [id]);
 
   // Calculate distance when both business and user location are available
@@ -174,14 +196,14 @@ export default function BusinessDetail() {
           </Link>
         </Stack>
 
-        {reviews.length > 0 && (
+        {reviews.length > 0 ? (
           <Box pt={4} borderTop="1px solid" borderColor="gray.200">
             <Heading size="md" mb={3}>Top Reviews</Heading>
             <Stack spacing={4}>
               {reviews.map((review) => (
                 <Box key={review.id} p={3} bg="gray.50" borderRadius="md">
                   <HStack spacing={2} mb={2}>
-                    <Text fontWeight="bold">{review.user.name}</Text>
+                    <Text fontWeight="bold">{review.user?.name || "Anonymous"}</Text>
                     <Text fontSize="sm" color="gray.600">
                       ⭐ {review.rating}
                     </Text>
@@ -195,6 +217,10 @@ export default function BusinessDetail() {
                 </Box>
               ))}
             </Stack>
+          </Box>
+        ) : (
+          <Box pt={4} borderTop="1px solid" borderColor="gray.200">
+            <Text color="gray.500" fontSize="sm">No reviews available</Text>
           </Box>
         )}
       </Stack>

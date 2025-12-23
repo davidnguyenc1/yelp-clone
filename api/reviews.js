@@ -19,7 +19,9 @@ export default async function handler(req, res) {
     }
 
     const data = await response.json();
-    return res.status(200).json(data.reviews || []);
+    // Yelp returns { reviews: [...] } or just the array
+    const reviews = Array.isArray(data) ? data : (data.reviews || []);
+    return res.status(200).json(reviews);
 
   } catch (err) {
     console.error("API function error:", err);
