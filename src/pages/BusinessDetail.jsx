@@ -65,6 +65,21 @@ export default function BusinessDetail() {
     return `${formatTime(match.start)} - ${formatTime(match.end)}${match.is_overnight ? " (overnight)" : ""}`;
   })();
 
+  const allWeekHours = (() => {
+    if (!business.hours || !business.hours[0]?.open) return [];
+    const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const grouped = new Map();
+    business.hours[0].open.forEach((o) => {
+      const key = o.day;
+      const slot = `${formatTime(o.start)} - ${formatTime(o.end)}${o.is_overnight ? " (overnight)" : ""}`;
+      grouped.set(key, [...(grouped.get(key) || []), slot]);
+    });
+    return dayNames.map((name, idx) => ({
+      label: name,
+      slots: grouped.get(idx) || [],
+    }));
+  })();
+
   return (
     <Box maxW="container.md" mx="auto" p={4}>
       <AspectRatio ratio={16 / 9} w="100%">
@@ -92,6 +107,15 @@ export default function BusinessDetail() {
       <Text>{business.price}</Text>
       {todayHours && (
         <Text color="gray.700">Today: {todayHours}</Text>
+      )}
+      {allWeekHours.length > 0 && (
+        <Stack spacing={1} mt={2}>
+          {allWeekHours.map(({ label, slots }) => (
+            <Text key={label} color="gray.700">
+              {label}: {slots.length > 0 ? slots.join(", ") : "Closed"}
+            </Text>
+          ))}
+        </Stack>
       )}
       <Text>{business.categories.map(c => c.title).join(", ")}</Text>
       <Stack mt={2}>
