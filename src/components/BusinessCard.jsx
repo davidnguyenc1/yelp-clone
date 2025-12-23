@@ -1,4 +1,4 @@
-import { Box, Image, Heading, Text, Stack, HStack } from "@chakra-ui/react";
+import { Box, Image, Heading, Text, Stack, HStack, Badge } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { formatDistance } from "../utils/distance";
 
@@ -16,6 +16,9 @@ export default function BusinessCard({ business }) {
                 <Text fontSize="sm" color="gray.600">
                   • {formatDistance(business.distance)}
                 </Text>
+              )}
+              {business.is_closed && (
+                <Badge colorScheme="red" fontSize="0.7rem">Closed</Badge>
               )}
             </HStack>
             <Text>{business.price}</Text>

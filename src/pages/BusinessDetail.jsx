@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Box, Heading, Image, Text, Spinner, Center, Stack, HStack, AspectRatio, Link } from "@chakra-ui/react";
+import { Box, Heading, Image, Text, Spinner, Center, Stack, HStack, AspectRatio, Link, Badge } from "@chakra-ui/react";
 import { formatDistance, calculateDistance } from "../utils/distance";
 
 export default function BusinessDetail() {
@@ -47,6 +47,24 @@ export default function BusinessDetail() {
 
   if (!business) return <Center py={10}><Spinner size="xl" /></Center>;
 
+  // Helpers to format hours
+  const formatTime = (t) => {
+    if (!t) return "";
+    const hours = Number(t.slice(0, 2));
+    const minutes = t.slice(2);
+    const suffix = hours >= 12 ? "PM" : "AM";
+    const displayHour = ((hours + 11) % 12) + 1;
+    return `${displayHour}:${minutes} ${suffix}`;
+  };
+
+  const todayHours = (() => {
+    if (!business.hours || !business.hours[0]?.open) return null;
+    const today = new Date().getDay(); // 0 = Sunday
+    const match = business.hours[0].open.find((o) => o.day === today);
+    if (!match) return null;
+    return `${formatTime(match.start)} - ${formatTime(match.end)}${match.is_overnight ? " (overnight)" : ""}`;
+  })();
+
   return (
     <Box maxW="container.md" mx="auto" p={4}>
       <AspectRatio ratio={16 / 9} w="100%">
@@ -65,8 +83,16 @@ export default function BusinessDetail() {
             • {formatDistance(distance)} away
           </Text>
         )}
+        {business.hours?.[0]?.is_open_now !== undefined && (
+          <Badge colorScheme={business.hours[0].is_open_now ? "green" : "red"}>
+            {business.hours[0].is_open_now ? "Open now" : "Closed"}
+          </Badge>
+        )}
       </HStack>
       <Text>{business.price}</Text>
+      {todayHours && (
+        <Text color="gray.700">Today: {todayHours}</Text>
+      )}
       <Text>{business.categories.map(c => c.title).join(", ")}</Text>
       <Stack mt={2}>
         <Text>{business.location.address1}, {business.location.city}</Text>
