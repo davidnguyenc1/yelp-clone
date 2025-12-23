@@ -74,9 +74,11 @@ export default function BusinessDetail() {
       const slot = `${formatTime(o.start)} - ${formatTime(o.end)}${o.is_overnight ? " (overnight)" : ""}`;
       grouped.set(key, [...(grouped.get(key) || []), slot]);
     });
+    const today = new Date().getDay();
     return dayNames.map((name, idx) => ({
       label: name,
       slots: grouped.get(idx) || [],
+      isToday: idx === today,
     }));
   })();
 
@@ -91,39 +93,59 @@ export default function BusinessDetail() {
         />
       </AspectRatio>
       <Heading mt={4}>{business.name}</Heading>
-      <HStack spacing={2} mt={2}>
-        <Text>⭐ {business.rating}</Text>
-        {distance && (
-          <Text fontSize="md" color="gray.600">
-            • {formatDistance(distance)} away
-          </Text>
-        )}
-        {business.hours?.[0]?.is_open_now !== undefined && (
-          <Badge colorScheme={business.hours[0].is_open_now ? "green" : "red"}>
-            {business.hours[0].is_open_now ? "Open now" : "Closed"}
-          </Badge>
-        )}
-      </HStack>
-      <Text>{business.price}</Text>
-      {todayHours && (
-        <Text color="gray.700">Today: {todayHours}</Text>
-      )}
-      {allWeekHours.length > 0 && (
-        <Stack spacing={1} mt={2}>
-          {allWeekHours.map(({ label, slots }) => (
-            <Text key={label} color="gray.700">
-              {label}: {slots.length > 0 ? slots.join(", ") : "Closed"}
+
+      <Stack spacing={3} mt={2}>
+        <HStack spacing={2} align="center">
+          <Text>⭐ {business.rating}</Text>
+          {distance && (
+            <Text fontSize="md" color="gray.600">
+              • {formatDistance(distance)} away
             </Text>
-          ))}
+          )}
+          {business.hours?.[0]?.is_open_now !== undefined && (
+            <Badge colorScheme={business.hours[0].is_open_now ? "green" : "red"}>
+              {business.hours[0].is_open_now ? "Open now" : "Closed"}
+            </Badge>
+          )}
+        </HStack>
+
+        <Text>{business.price}</Text>
+
+        <Text>{business.categories.map(c => c.title).join(", ")}</Text>
+
+        {todayHours && (
+          <Text color="gray.700">Today: {todayHours}</Text>
+        )}
+
+        {allWeekHours.length > 0 && (
+          <Stack spacing={1} pt={1}>
+            {allWeekHours.map(({ label, slots, isToday }) => (
+              <HStack
+                key={label}
+                justify="space-between"
+                bg={isToday ? "gray.100" : "transparent"}
+                borderRadius="md"
+                px={2}
+                py={1}
+              >
+                <Text fontWeight={isToday ? "bold" : "normal"} color="gray.800">
+                  {label}
+                </Text>
+                <Text color="gray.700">
+                  {slots.length > 0 ? slots.join(", ") : "Closed"}
+                </Text>
+              </HStack>
+            ))}
+          </Stack>
+        )}
+
+        <Stack spacing={1} pt={2}>
+          <Text>{business.location.address1}, {business.location.city}</Text>
+          <Text>{business.display_phone}</Text>
+          <Link href={business.url} color="blue.500" isExternal>
+            {business.url}
+          </Link>
         </Stack>
-      )}
-      <Text>{business.categories.map(c => c.title).join(", ")}</Text>
-      <Stack mt={2}>
-        <Text>{business.location.address1}, {business.location.city}</Text>
-        <Text>{business.display_phone}</Text>
-        <Link href={business.url} color="blue.500" isExternal>
-          {business.url}
-        </Link>
       </Stack>
     </Box>
   );
