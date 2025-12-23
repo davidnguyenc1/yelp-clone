@@ -8,6 +8,7 @@ export default function BusinessDetail() {
   const [business, setBusiness] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
   const [distance, setDistance] = useState(null);
+  const [reviews, setReviews] = useState([]);
 
   // Get user location
   useEffect(() => {
@@ -29,6 +30,16 @@ export default function BusinessDetail() {
     fetch(`/api/business?id=${id}`)
       .then(res => res.json())
       .then(data => setBusiness(data))
+      .catch(err => console.error(err));
+  }, [id]);
+
+  // Fetch reviews
+  useEffect(() => {
+    if (!id) return;
+
+    fetch(`/api/reviews?id=${id}`)
+      .then(res => res.json())
+      .then(data => setReviews(data))
       .catch(err => console.error(err));
   }, [id]);
 
@@ -95,8 +106,20 @@ export default function BusinessDetail() {
       <Heading mt={4}>{business.name}</Heading>
 
       <Stack spacing={3} mt={2}>
-        <HStack spacing={2} align="center">
-          <Text>⭐ {business.rating}</Text>
+        <HStack spacing={2} align="center" flexWrap="wrap">
+          <HStack spacing={1}>
+            <Text>⭐ {business.rating}</Text>
+            {business.review_count && (
+              <Text fontSize="sm" color="gray.600">
+                · {business.review_count} {business.review_count === 1 ? "review" : "reviews"}
+              </Text>
+            )}
+          </HStack>
+          {business.price && (
+            <Text fontSize="md" color="gray.700">
+              {business.price}
+            </Text>
+          )}
           {distance && (
             <Text fontSize="md" color="gray.600">
               • {formatDistance(distance)} away
@@ -108,8 +131,6 @@ export default function BusinessDetail() {
             </Badge>
           )}
         </HStack>
-
-        <Text>{business.price}</Text>
 
         <Text>{business.categories.map(c => c.title).join(", ")}</Text>
 
@@ -140,12 +161,42 @@ export default function BusinessDetail() {
         )}
 
         <Stack spacing={1} pt={2}>
-          <Text>{business.location.address1}, {business.location.city}</Text>
+          {business.location.display_address && (
+            <Stack spacing={0}>
+              {business.location.display_address.map((line, idx) => (
+                <Text key={idx}>{line}</Text>
+              ))}
+            </Stack>
+          )}
           <Text>{business.display_phone}</Text>
           <Link href={business.url} color="blue.500" isExternal>
             {business.url}
           </Link>
         </Stack>
+
+        {reviews.length > 0 && (
+          <Box pt={4} borderTop="1px solid" borderColor="gray.200">
+            <Heading size="md" mb={3}>Top Reviews</Heading>
+            <Stack spacing={4}>
+              {reviews.map((review) => (
+                <Box key={review.id} p={3} bg="gray.50" borderRadius="md">
+                  <HStack spacing={2} mb={2}>
+                    <Text fontWeight="bold">{review.user.name}</Text>
+                    <Text fontSize="sm" color="gray.600">
+                      ⭐ {review.rating}
+                    </Text>
+                    {review.time_created && (
+                      <Text fontSize="sm" color="gray.500">
+                        {new Date(review.time_created).toLocaleDateString()}
+                      </Text>
+                    )}
+                  </HStack>
+                  <Text color="gray.700">{review.text}</Text>
+                </Box>
+              ))}
+            </Stack>
+          </Box>
+        )}
       </Stack>
     </Box>
   );
