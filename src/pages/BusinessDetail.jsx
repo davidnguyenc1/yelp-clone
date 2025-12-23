@@ -47,11 +47,13 @@ export default function BusinessDetail() {
 
   if (!business) return <Center py={10}><Spinner size="xl" /></Center>;
 
-  const galleryPhotos = business.photos && business.photos.length > 0
-    ? business.photos.slice(0, 3)
-    : business.image_url
-      ? [business.image_url]
-      : [];
+  // Build a gallery of up to 3 unique photos (Yelp detail returns up to 3)
+  const galleryPhotos = Array.from(
+    new Set([
+      ...(business.photos ?? []),
+      business.image_url,
+    ].filter(Boolean))
+  ).slice(0, 3);
 
   return (
     <Box maxW="container.md" mx="auto" p={4}>
