@@ -37,25 +37,33 @@ export default function BusinessDetail() {
   useEffect(() => {
     if (!id) return;
 
+    console.log("Fetching reviews for business:", id);
     fetch(`/api/reviews?id=${id}`)
       .then(res => {
+        console.log("Reviews API response status:", res.status, res.statusText);
         if (!res.ok) {
           console.error("Reviews API error:", res.status, res.statusText);
-          return [];
+          return res.text().then(text => {
+            console.error("Error response body:", text);
+            return { error: text };
+          });
         }
         return res.json();
       })
       .then(data => {
-        console.log("Reviews data:", data);
+        console.log("Reviews API response data:", data);
         // Handle both array and object with reviews property
         if (Array.isArray(data)) {
+          console.log("Setting reviews array:", data.length);
           setReviews(data);
-        } else if (data?.reviews) {
+        } else if (data?.reviews && Array.isArray(data.reviews)) {
+          console.log("Setting reviews from object:", data.reviews.length);
           setReviews(data.reviews);
         } else if (data?.error) {
           console.error("Reviews API returned error:", data.error);
           setReviews([]);
         } else {
+          console.warn("Unexpected reviews data format:", data);
           setReviews([]);
         }
       })
