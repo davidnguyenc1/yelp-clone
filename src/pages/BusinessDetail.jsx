@@ -9,6 +9,7 @@ export default function BusinessDetail() {
   const [userLocation, setUserLocation] = useState(null);
   const [distance, setDistance] = useState(null);
   const [reviews, setReviews] = useState([]);
+  const [reviewsLoading, setReviewsLoading] = useState(true);
 
   // Get user location
   useEffect(() => {
@@ -37,6 +38,7 @@ export default function BusinessDetail() {
   useEffect(() => {
     if (!id) return;
 
+    setReviewsLoading(true);
     console.log("Fetching reviews for business:", id);
     fetch(`/api/reviews?id=${id}`)
       .then(res => {
@@ -45,14 +47,18 @@ export default function BusinessDetail() {
           console.error("Reviews API error:", res.status, res.statusText);
           return res.text().then(text => {
             console.error("Error response body:", text);
-            return { error: text };
+            try {
+              return JSON.parse(text);
+            } catch {
+              return { error: text };
+            }
           });
         }
         return res.json();
       })
       .then(data => {
         console.log("Reviews API response data:", data);
-        // Handle both array and object with reviews property
+        // Handle array response (our API returns array directly)
         if (Array.isArray(data)) {
           console.log("Setting reviews array:", data.length);
           setReviews(data);
@@ -70,6 +76,9 @@ export default function BusinessDetail() {
       .catch(err => {
         console.error("Error fetching reviews:", err);
         setReviews([]);
+      })
+      .finally(() => {
+        setReviewsLoading(false);
       });
   }, [id]);
 
@@ -204,9 +213,13 @@ export default function BusinessDetail() {
           </Link>
         </Stack>
 
-        {reviews.length > 0 ? (
-          <Box pt={4} borderTop="1px solid" borderColor="gray.200">
-            <Heading size="md" mb={3}>Top Reviews</Heading>
+        <Box pt={4} borderTop="1px solid" borderColor="gray.200">
+          <Heading size="md" mb={3}>Top Reviews</Heading>
+          {reviewsLoading ? (
+            <Center py={4}>
+              <Spinner size="sm" />
+            </Center>
+          ) : reviews.length > 0 ? (
             <Stack spacing={4}>
               {reviews.map((review) => (
                 <Box key={review.id} p={3} bg="gray.50" borderRadius="md">
@@ -225,12 +238,10 @@ export default function BusinessDetail() {
                 </Box>
               ))}
             </Stack>
-          </Box>
-        ) : (
-          <Box pt={4} borderTop="1px solid" borderColor="gray.200">
+          ) : (
             <Text color="gray.500" fontSize="sm">No reviews available</Text>
-          </Box>
-        )}
+          )}
+        </Box>
       </Stack>
     </Box>
   );
