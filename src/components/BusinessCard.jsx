@@ -17,9 +17,9 @@ export default function BusinessCard({ business }) {
                   • {formatDistance(business.distance)}
                 </Text>
               )}
-              {business.is_closed && (
-                <Badge colorScheme="red" fontSize="0.7rem">Closed</Badge>
-              )}
+              <Badge colorScheme={business.is_closed ? "red" : "green"} fontSize="0.7rem">
+                {business.is_closed ? "Closed" : "Open"}
+              </Badge>
             </HStack>
             <Text>{business.price}</Text>
             <Text>{business.categories.map(c => c.title).join(", ")}</Text>
