@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Box, Heading, Image, Text, Spinner, Center, Stack, HStack } from "@chakra-ui/react";
+import { Box, Heading, Image, Text, Spinner, Center, Stack, HStack, AspectRatio } from "@chakra-ui/react";
 import { formatDistance, calculateDistance } from "../utils/distance";
 
 export default function BusinessDetail() {
@@ -49,7 +49,14 @@ export default function BusinessDetail() {
 
   return (
     <Box maxW="container.md" mx="auto" p={4}>
-      <Image src={business.image_url} borderRadius="md" />
+      <AspectRatio ratio={16 / 9} w="100%">
+        <Image
+          src={business.image_url}
+          alt={business.name}
+          borderRadius="md"
+          objectFit="cover"
+        />
+      </AspectRatio>
       <Heading mt={4}>{business.name}</Heading>
       <HStack spacing={2} mt={2}>
         <Text>⭐ {business.rating}</Text>
