@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Box, Heading, Image, Text, Spinner, Center, Stack, HStack, SimpleGrid } from "@chakra-ui/react";
+import { Box, Heading, Image, Text, Spinner, Center, Stack, HStack } from "@chakra-ui/react";
 import { formatDistance, calculateDistance } from "../utils/distance";
 
 export default function BusinessDetail() {
@@ -47,32 +47,9 @@ export default function BusinessDetail() {
 
   if (!business) return <Center py={10}><Spinner size="xl" /></Center>;
 
-  // Build a gallery of up to 3 unique photos (Yelp detail returns up to 3)
-  const galleryPhotos = Array.from(
-    new Set([
-      ...(business.photos ?? []),
-      business.image_url,
-    ].filter(Boolean))
-  ).slice(0, 3);
-
   return (
     <Box maxW="container.md" mx="auto" p={4}>
       <Image src={business.image_url} borderRadius="md" />
-      {galleryPhotos.length > 0 && (
-        <SimpleGrid columns={[1, 2, 3]} spacing={3} mt={3}>
-          {galleryPhotos.map((photo, idx) => (
-            <Image
-              key={photo}
-              src={photo}
-              alt={`${business.name} photo ${idx + 1}`}
-              borderRadius="md"
-              objectFit="cover"
-              w="100%"
-              h="180px"
-            />
-          ))}
-        </SimpleGrid>
-      )}
       <Heading mt={4}>{business.name}</Heading>
       <HStack spacing={2} mt={2}>
         <Text>⭐ {business.rating}</Text>
