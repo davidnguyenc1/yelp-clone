@@ -24,9 +24,22 @@ export default async function handler(req, res) {
     console.log("Yelp response status:", response.status);
 
     if (!response.ok) {
-      const text = await response.text();
-      console.error("Yelp API error:", response.status, text);
-      return res.status(response.status).json({ error: text });
+      let errorData;
+      try {
+        const text = await response.text();
+        errorData = JSON.parse(text);
+        console.error("Yelp API error:", response.status, errorData);
+      } catch (e) {
+        errorData = { error: "Failed to parse error response" };
+      }
+      
+      // If it's a 404, the business might not have reviews - return empty array instead of error
+      if (response.status === 404) {
+        console.log(`Business ${id} not found or has no reviews - returning empty array`);
+        return res.status(200).json([]);
+      }
+      
+      return res.status(response.status).json({ error: errorData });
     }
 
     const data = await response.json();

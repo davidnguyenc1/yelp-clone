@@ -74,7 +74,11 @@ export default function BusinessDetail() {
           setReviewsError(null);
         } else if (data?.error) {
           console.error("Reviews API returned error:", data.error);
-          setReviewsError(data.error);
+          // Handle nested error format from Yelp
+          const errorMsg = typeof data.error === 'object' 
+            ? (data.error.description || data.error.code || JSON.stringify(data.error))
+            : data.error;
+          setReviewsError(errorMsg);
           setReviews([]);
         } else {
           console.warn("Unexpected reviews data format:", data);
