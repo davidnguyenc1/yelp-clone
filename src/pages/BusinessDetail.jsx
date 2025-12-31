@@ -1,7 +1,19 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Box, Heading, Image, Text, Spinner, Center, Stack, HStack, AspectRatio, Link, Badge } from "@chakra-ui/react";
+import { Box, Heading, Image, Text, Spinner, Center, Stack, HStack, AspectRatio, Link, Badge, Button } from "@chakra-ui/react";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 import { formatDistance, calculateDistance } from "../utils/distance";
+
+// Fix for default marker icon in Leaflet with React
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
+  iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
+  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+});
 
 export default function BusinessDetail() {
   const { id } = useParams();
@@ -81,6 +93,25 @@ export default function BusinessDetail() {
       isToday: idx === today,
     }));
   })();
+
+  // Generate Google Maps directions URL
+  const getDirectionsUrl = () => {
+    if (!business.coordinates) {
+      // Fallback to address-based directions
+      const address = business.location?.display_address?.join(", ") || business.name;
+      return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`;
+    }
+    
+    const { latitude, longitude } = business.coordinates;
+    let url = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`;
+    
+    // Add origin if user location is available
+    if (userLocation) {
+      url += `&origin=${userLocation.lat},${userLocation.lng}`;
+    }
+    
+    return url;
+  };
 
   return (
     <Box maxW="container.md" mx="auto" p={4}>
@@ -162,6 +193,54 @@ export default function BusinessDetail() {
             {business.url}
           </Link>
         </Stack>
+
+        {/* Map Section */}
+        {business.coordinates && (
+          <Box pt={4}>
+            <Heading size="md" mb={3}>Location</Heading>
+            <Button
+              as="a"
+              href={getDirectionsUrl()}
+              target="_blank"
+              rel="noopener noreferrer"
+              colorScheme="blue"
+              leftIcon={<ExternalLinkIcon />}
+              mb={3}
+            >
+              Get Directions
+            </Button>
+            <Box
+              borderRadius="md"
+              overflow="hidden"
+              border="1px solid"
+              borderColor="gray.200"
+              height="400px"
+              w="100%"
+            >
+              <MapContainer
+                center={[business.coordinates.latitude, business.coordinates.longitude]}
+                zoom={15}
+                style={{ height: "100%", width: "100%", borderRadius: "8px" }}
+                scrollWheelZoom={true}
+              >
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                <Marker position={[business.coordinates.latitude, business.coordinates.longitude]}>
+                  <Popup>
+                    <Text fontWeight="bold">{business.name}</Text>
+                    {business.location?.display_address && (
+                      <Text fontSize="sm">
+                        {business.location.display_address.join(", ")}
+                      </Text>
+                    )}
+                  </Popup>
+                </Marker>
+              </MapContainer>
+            </Box>
+          </Box>
+        )}
       </Stack>
     </Box>
   );
