@@ -189,9 +189,6 @@ export default function BusinessDetail() {
             </Stack>
           )}
           <Text>{business.display_phone}</Text>
-          <Link href={business.url} color="blue.500" isExternal>
-            {business.url}
-          </Link>
         </Stack>
 
         {/* Map Section */}
@@ -239,6 +236,15 @@ export default function BusinessDetail() {
                 </Marker>
               </MapContainer>
             </Box>
+          </Box>
+        )}
+
+        {/* Yelp Link */}
+        {business.url && (
+          <Box pt={4}>
+            <Link href={business.url} color="blue.500" isExternal>
+              View on Yelp
+            </Link>
           </Box>
         )}
       </Stack>
