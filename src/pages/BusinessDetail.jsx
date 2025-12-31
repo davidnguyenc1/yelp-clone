@@ -154,47 +154,57 @@ export default function BusinessDetail() {
 
         <Text>{business.categories.map(c => c.title).join(", ")}</Text>
 
-        {todayHours && (
-          <Text color="gray.700">Today: {todayHours}</Text>
+        {/* Hours Section */}
+        {(todayHours || allWeekHours.length > 0) && (
+          <Box pt={4}>
+            <Heading size="md" mb={3}>Hours</Heading>
+            {todayHours && (
+              <Text color="gray.700" mb={2}>Today: {todayHours}</Text>
+            )}
+
+            {allWeekHours.length > 0 && (
+              <Stack spacing={1} pt={1}>
+                {allWeekHours.map(({ label, slots, isToday }) => (
+                  <HStack
+                    key={label}
+                    justify="space-between"
+                    bg={isToday ? "gray.100" : "transparent"}
+                    borderRadius="md"
+                    px={2}
+                    py={1}
+                  >
+                    <Text fontWeight={isToday ? "bold" : "normal"} color="gray.800">
+                      {label}
+                    </Text>
+                    <Text color="gray.700">
+                      {slots.length > 0 ? slots.join(", ") : "Closed"}
+                    </Text>
+                  </HStack>
+                ))}
+              </Stack>
+            )}
+          </Box>
         )}
 
-        {allWeekHours.length > 0 && (
-          <Stack spacing={1} pt={1}>
-            {allWeekHours.map(({ label, slots, isToday }) => (
-              <HStack
-                key={label}
-                justify="space-between"
-                bg={isToday ? "gray.100" : "transparent"}
-                borderRadius="md"
-                px={2}
-                py={1}
-              >
-                <Text fontWeight={isToday ? "bold" : "normal"} color="gray.800">
-                  {label}
-                </Text>
-                <Text color="gray.700">
-                  {slots.length > 0 ? slots.join(", ") : "Closed"}
-                </Text>
-              </HStack>
-            ))}
+        {/* Location Section */}
+        <Box pt={4}>
+          <Heading size="md" mb={3}>Location</Heading>
+          <Stack spacing={1}>
+            {business.location.display_address && (
+              <Stack spacing={0}>
+                {business.location.display_address.map((line, idx) => (
+                  <Text key={idx}>{line}</Text>
+                ))}
+              </Stack>
+            )}
+            <Text>{business.display_phone}</Text>
           </Stack>
-        )}
-
-        <Stack spacing={1} pt={2}>
-          {business.location.display_address && (
-            <Stack spacing={0}>
-              {business.location.display_address.map((line, idx) => (
-                <Text key={idx}>{line}</Text>
-              ))}
-            </Stack>
-          )}
-          <Text>{business.display_phone}</Text>
-        </Stack>
+        </Box>
 
         {/* Map Section */}
         {business.coordinates && (
           <Box pt={4}>
-            <Heading size="md" mb={3}>Location</Heading>
+            <Heading size="md" mb={3}>Map</Heading>
             <Button
               as="a"
               href={getDirectionsUrl()}
