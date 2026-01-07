@@ -24,6 +24,11 @@ export default function BusinessDetail() {
   const [similarBusinesses, setSimilarBusinesses] = useState([]);
   const [loadingSimilar, setLoadingSimilar] = useState(false);
 
+  // Scroll to top when business ID changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [id]);
+
   // Get user location
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
