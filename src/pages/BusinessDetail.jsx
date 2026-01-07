@@ -1,11 +1,12 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Box, Heading, Image, Text, Spinner, Center, Stack, HStack, AspectRatio, Link, Badge, Button } from "@chakra-ui/react";
+import { Box, Heading, Image, Text, Spinner, Center, Stack, HStack, AspectRatio, Link, Badge, Button, SimpleGrid } from "@chakra-ui/react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { formatDistance, calculateDistance } from "../utils/distance";
+import BusinessCard from "../components/BusinessCard";
 
 // Fix for default marker icon in Leaflet with React
 delete L.Icon.Default.prototype._getIconUrl;
@@ -20,6 +21,8 @@ export default function BusinessDetail() {
   const [business, setBusiness] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
   const [distance, setDistance] = useState(null);
+  const [similarBusinesses, setSimilarBusinesses] = useState([]);
+  const [loadingSimilar, setLoadingSimilar] = useState(false);
 
   // Get user location
   useEffect(() => {
@@ -55,6 +58,58 @@ export default function BusinessDetail() {
       );
       setDistance(dist);
     }
+  }, [business, userLocation]);
+
+  // Fetch similar businesses
+  useEffect(() => {
+    if (!business || !business.coordinates) return;
+
+    const fetchSimilarBusinesses = async () => {
+      setLoadingSimilar(true);
+      try {
+        // Get the primary category from the business
+        const primaryCategory = business.categories?.[0]?.alias || "restaurants";
+        const { latitude, longitude } = business.coordinates;
+
+        // Search for businesses in the same category and location
+        const url = `/api/search?lat=${latitude}&lng=${longitude}&category=${primaryCategory}&term=${primaryCategory}`;
+        const res = await fetch(url);
+        
+        if (!res.ok) throw new Error("Failed to fetch similar businesses");
+        
+        const data = await res.json();
+        
+        // Filter out the current business and limit to 6 results
+        let filtered = data
+          .filter(b => b.id !== business.id)
+          .slice(0, 6);
+        
+        // Calculate distances if user location is available
+        if (userLocation) {
+          filtered = filtered.map(b => {
+            if (b.coordinates) {
+              const dist = calculateDistance(
+                userLocation.lat,
+                userLocation.lng,
+                b.coordinates.latitude,
+                b.coordinates.longitude
+              );
+              return { ...b, distance: dist };
+            }
+            return b;
+          });
+        }
+        
+        setSimilarBusinesses(filtered);
+      } catch (err) {
+        console.error("Error fetching similar businesses:", err);
+        setSimilarBusinesses([]);
+      } finally {
+        setLoadingSimilar(false);
+      }
+    };
+
+    fetchSimilarBusinesses();
   }, [business, userLocation]);
 
   if (!business) return <Center py={10}><Spinner size="xl" /></Center>;
@@ -246,6 +301,24 @@ export default function BusinessDetail() {
                 </Marker>
               </MapContainer>
             </Box>
+          </Box>
+        )}
+
+        {/* Similar Businesses Section */}
+        {similarBusinesses.length > 0 && (
+          <Box pt={6}>
+            <Heading size="md" mb={4}>Similar Businesses</Heading>
+            {loadingSimilar ? (
+              <Center py={10}>
+                <Spinner size="lg" />
+              </Center>
+            ) : (
+              <SimpleGrid columns={[1, 2, 3]} spacing={5}>
+                {similarBusinesses.map((b) => (
+                  <BusinessCard key={b.id} business={b} />
+                ))}
+              </SimpleGrid>
+            )}
           </Box>
         )}
 
