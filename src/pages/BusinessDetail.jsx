@@ -1,7 +1,7 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Box, Heading, Image, Text, Spinner, Center, Stack, HStack, AspectRatio, Link, Badge, Button, SimpleGrid } from "@chakra-ui/react";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { ExternalLinkIcon, ArrowBackIcon } from "@chakra-ui/icons";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -18,6 +18,7 @@ L.Icon.Default.mergeOptions({
 
 export default function BusinessDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [business, setBusiness] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
   const [distance, setDistance] = useState(null);
@@ -175,6 +176,23 @@ export default function BusinessDetail() {
 
   return (
     <Box maxW="container.md" mx="auto" p={4}>
+      <HStack spacing={3} mb={4}>
+        <Button
+          leftIcon={<ArrowBackIcon />}
+          onClick={() => navigate(-1)}
+          variant="outline"
+          size="sm"
+        >
+          Back
+        </Button>
+        <Button
+          onClick={() => navigate("/")}
+          variant="ghost"
+          size="sm"
+        >
+          Home
+        </Button>
+      </HStack>
       <AspectRatio ratio={16 / 9} w="100%">
         <Image
           src={business.image_url}
