@@ -1,14 +1,17 @@
-import { InputGroup, InputLeftElement, Input } from "@chakra-ui/react";
+import { InputGroup, InputLeftElement, Input, useColorModeValue } from "@chakra-ui/react";
 import { SearchIcon } from "@chakra-ui/icons";
 
 export default function SearchBar({ query, setQuery }) {
+  const bg = useColorModeValue("white", "gray.700");
+  const iconColor = useColorModeValue("gray.400", "gray.500");
+
   return (
     <InputGroup mb={5}>
       <InputLeftElement pointerEvents="none">
-        <SearchIcon color="gray.400" />
+        <SearchIcon color={iconColor} />
       </InputLeftElement>
       <Input
-        bg="white"
+        bg={bg}
         placeholder="Search restaurants, cafes, bars..."
         value={query}
         onChange={(e) => setQuery(e.target.value)}

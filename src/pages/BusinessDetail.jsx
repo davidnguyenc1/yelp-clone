@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Box, Heading, Image, Text, Spinner, Center, Stack, HStack, AspectRatio, Link, Badge, Button, SimpleGrid } from "@chakra-ui/react";
+import { Box, Heading, Image, Text, Spinner, Center, Stack, HStack, AspectRatio, Link, Badge, Button, SimpleGrid, useColorModeValue } from "@chakra-ui/react";
 import { ExternalLinkIcon, ArrowBackIcon } from "@chakra-ui/icons";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
@@ -120,6 +120,11 @@ export default function BusinessDetail() {
 
   if (!business) return <Center py={10}><Spinner size="xl" /></Center>;
 
+  // Color mode values
+  const todayBg = useColorModeValue("gray.100", "gray.700");
+  const textColor = useColorModeValue("gray.700", "gray.300");
+  const headingColor = useColorModeValue("gray.800", "gray.100");
+
   // Helpers to format hours
   const formatTime = (t) => {
     if (!t) return "";
@@ -214,7 +219,7 @@ export default function BusinessDetail() {
             )}
           </HStack>
           {business.price && (
-            <Text fontSize="md" color="gray.700">
+            <Text fontSize="md" color={textColor}>
               {business.price}
             </Text>
           )}
@@ -237,7 +242,7 @@ export default function BusinessDetail() {
           <Box pt={4}>
             <Heading size="md" mb={3}>Hours</Heading>
             {todayHours && (
-              <Text color="gray.700" mb={2}>Today: {todayHours}</Text>
+              <Text color={textColor} mb={2}>Today: {todayHours}</Text>
             )}
 
             {allWeekHours.length > 0 && (
@@ -246,15 +251,15 @@ export default function BusinessDetail() {
                   <HStack
                     key={label}
                     justify="space-between"
-                    bg={isToday ? "gray.100" : "transparent"}
+                    bg={isToday ? todayBg : "transparent"}
                     borderRadius="md"
                     px={2}
                     py={1}
                   >
-                    <Text fontWeight={isToday ? "bold" : "normal"} color="gray.800">
+                    <Text fontWeight={isToday ? "bold" : "normal"} color={headingColor}>
                       {label}
                     </Text>
-                    <Text color="gray.700">
+                    <Text color={textColor}>
                       {slots.length > 0 ? slots.join(", ") : "Closed"}
                     </Text>
                   </HStack>
@@ -298,7 +303,7 @@ export default function BusinessDetail() {
               borderRadius="md"
               overflow="hidden"
               border="1px solid"
-              borderColor="gray.200"
+              borderColor={useColorModeValue("gray.200", "gray.600")}
               height="400px"
               w="100%"
             >

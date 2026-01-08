@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 
-import { Box, Container } from "@chakra-ui/react";
+import { Box, Container, useColorModeValue } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import Navbar from "./components/Navbar";
 import SearchBar from "./components/SearchBar";
@@ -15,7 +15,7 @@ function App() {
   const [location, setLocation] = useState(null);
   const [city, setCity] = useState("");
   const [category, setCategory] = useState("");
-
+  const bg = useColorModeValue("gray.50", "gray.900");
 
   // Try GPS first
   useEffect(() => {
@@ -30,7 +30,7 @@ function App() {
   }, []);
 
   return (
-    <Box bg="gray.50" minH="100vh">
+    <Box bg={bg} minH="100vh">
       <Navbar />
       <Container maxW="container.lg" py={4}>
         <Routes>
