@@ -6,6 +6,7 @@ export default async function handler(req, res) {
     city,
     category,
     radius,
+    price,
   } = req.query;
 
   let url = "https://api.yelp.com/v3/businesses/search?limit=12";
@@ -31,6 +32,11 @@ export default async function handler(req, res) {
   if (radius && lat && lng) {
     const radiusValue = Math.min(parseInt(radius), 40000);
     url += `&radius=${radiusValue}`;
+  }
+
+  // Price filter (1=$, 2=$$, 3=$$$, 4=$$$$)
+  if (price) {
+    url += `&price=${price}`;
   }
 
   try {
