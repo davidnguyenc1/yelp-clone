@@ -5,6 +5,7 @@ export default async function handler(req, res) {
     term = "restaurants",
     city,
     category,
+    radius,
   } = req.query;
 
   let url = "https://api.yelp.com/v3/businesses/search?limit=12";
@@ -23,6 +24,11 @@ export default async function handler(req, res) {
   // Category filter (food only)
   if (category) {
     url += `&categories=${category}`;
+  }
+
+  // Radius filter (in meters, only works with lat/lng, not city search)
+  if (radius && lat && lng) {
+    url += `&radius=${radius}`;
   }
 
   try {

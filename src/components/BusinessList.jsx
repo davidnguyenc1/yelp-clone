@@ -2,7 +2,7 @@ import { SimpleGrid, Spinner, Center, Text, HStack, Button } from "@chakra-ui/re
 import { useEffect, useState } from "react";
 import BusinessCard from "./BusinessCard";
 
-export default function BusinessList({ searchQuery, location, city, category }) {
+export default function BusinessList({ searchQuery, location, city, category, radius }) {
   const [businesses, setBusinesses] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -23,6 +23,11 @@ export default function BusinessList({ searchQuery, location, city, category }) 
       const selectedCategory = category || "restaurants";
       url += `&category=${selectedCategory}`;
 
+      // Add radius filter if specified (only works with lat/lng, not city)
+      if (radius && location) {
+        url += `&radius=${radius}`;
+      }
+
       try {
         const res = await fetch(url);
         if (!res.ok) throw new Error("Failed to fetch businesses");
@@ -36,7 +41,7 @@ export default function BusinessList({ searchQuery, location, city, category }) 
     };
 
     fetchBusinesses();
-  }, [searchQuery, location, city, category]);
+  }, [searchQuery, location, city, category, radius]);
 
   if (loading) return <Center py={10}><Spinner size="xl" /></Center>;
   if (error) return <Center py={10}><Text color="red.500">{error}</Text></Center>;
