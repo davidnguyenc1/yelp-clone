@@ -4,8 +4,8 @@ const DISTANCE_OPTIONS = [
   { label: "5 miles", value: 8047 }, // 5 miles in meters
   { label: "10 miles", value: 16093 }, // 10 miles in meters
   { label: "15 miles", value: 24140 }, // 15 miles in meters
-  { label: "25 miles", value: 40234 }, // 25 miles in meters
-  { label: "40 miles", value: 64374 }, // 40 miles in meters
+  { label: "25 miles", value: 40234 }, // 25 miles in meters (will be capped at 40,000m by API)
+  { label: "40 miles", value: 64374 }, // 40 miles in meters (will be capped at 40,000m by API)
 ];
 
 export default function DistanceFilter({ radius, setRadius }) {

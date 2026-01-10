@@ -27,8 +27,10 @@ export default async function handler(req, res) {
   }
 
   // Radius filter (in meters, only works with lat/lng, not city search)
+  // Yelp API maximum radius is 40,000 meters, so we cap it
   if (radius && lat && lng) {
-    url += `&radius=${radius}`;
+    const radiusValue = Math.min(parseInt(radius), 40000);
+    url += `&radius=${radiusValue}`;
   }
 
   try {
